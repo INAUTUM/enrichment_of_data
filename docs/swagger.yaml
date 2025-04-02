@@ -1,0 +1,168 @@
+basePath: /
+definitions:
+  models.Person:
+    properties:
+      age:
+        type: integer
+      gender:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      nationality:
+        type: string
+      patronymic:
+        type: string
+      surname:
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API для работы с людьми, включая создание, обновление, удаление и получение
+    данных.
+  termsOfService: http://swagger.io/terms/
+  title: People API
+  version: "1.0"
+paths:
+  /people:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список людей с возможностью фильтрации по имени и полу,
+        а также пагинации
+      parameters:
+      - description: Имя
+        in: query
+        name: name
+        type: string
+      - description: Пол
+        in: query
+        name: gender
+        type: string
+      - description: Лимит
+        in: query
+        name: limit
+        type: integer
+      - description: Смещение
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Person'
+            type: array
+        "400":
+          description: '{\"error": \"Invalid query parameters"}'
+          schema:
+            type: object
+      summary: Получение списка людей с фильтрацией и пагинацией
+      tags:
+      - People
+    post:
+      consumes:
+      - application/json
+      description: Принимает ФИО, обогащает данными (возраст, пол, национальность)
+        и сохраняет в БД
+      parameters:
+      - description: Имя, фамилия и отчество
+        in: body
+        name: person
+        required: true
+        schema:
+          $ref: '#/definitions/models.Person'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Person'
+        "400":
+          description: '{\"error": \"Invalid input"}'
+          schema:
+            type: object
+        "500":
+          description: '{\"error": \"Failed to save person"}'
+          schema:
+            type: object
+      summary: Создание нового человека
+      tags:
+      - People
+  /people/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет человека из базы данных по его ID
+      parameters:
+      - description: ID человека
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{\"message\": \"Пользователь удален\"}'
+          schema:
+            type: object
+        "400":
+          description: '{\"error\": \"Invalid ID"}'
+          schema:
+            type: object
+        "404":
+          description: '{\"error\": \"Person not found\"}'
+          schema:
+            type: object
+        "500":
+          description: '{\"error\": \"Failed to delete person\"}'
+          schema:
+            type: object
+      summary: Удаление человека по ID
+      tags:
+      - People
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о человеке по его ID
+      parameters:
+      - description: ID человека
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные для обновления
+        in: body
+        name: person
+        required: true
+        schema:
+          $ref: '#/definitions/models.Person'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Person'
+        "400":
+          description: '{\"error": \"Invalid input"}'
+          schema:
+            type: object
+        "404":
+          description: '{\"error": \"Person not found\"}'
+          schema:
+            type: object
+      summary: Обновление информации о человеке
+      tags:
+      - People
+swagger: "2.0"
